@@ -1,0 +1,26 @@
+name: Build Extension
+on: [workflow_dispatch]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+      - name: Install Rush & Build
+        run: |
+          wget https://github.com/ShreyashSaitwal/rush-cli/releases/download/v1.2.5/rush-linux.zip
+          unzip rush-linux.zip -d rush_tool
+          # Tìm file rush bất kể nó nằm đâu
+          RUSH_BIN=$(find rush_tool -name rush -type f | head -n 1)
+          chmod +x $RUSH_BIN
+          # Build
+          $RUSH_BIN build
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: Android15Fix-Extension
+          path: out/*.aix
