@@ -1,4 +1,4 @@
-name: Build Extension
+name: Build Extension Final
 on: [workflow_dispatch]
 jobs:
   build:
@@ -12,27 +12,22 @@ jobs:
           distribution: 'temurin'
           java-version: '11'
       
-      - name: Install Rush & SDK Manually
+      - name: Install Environment & Build
         run: |
-          # 1. Tải Rush Binary (File chạy)
+          # 1. Tải Rush Binary
           wget -q https://github.com/ShreyashSaitwal/rush-cli/releases/download/v1.2.5/rush-linux.zip
           unzip -q rush-linux.zip -d rush_temp
           
-          # 2. Tải Rush SDK (BẮT BUỘC - Đây là cái Rush đang thiếu)
+          # 2. Tải SDK (Quan trọng)
           wget -q https://github.com/ShreyashSaitwal/rush-cli/releases/download/v1.2.5/rush-sdk.zip
           
-          # 3. Thiết lập cấu trúc thư mục chuẩn mà Rush yêu cầu (Fix lỗi "doesn't exists")
-          # Tạo thư mục gốc /home/runner/rush
-          mkdir -p /home/runner/rush
-          
-          # Giải nén SDK vào đúng chỗ Rush muốn (/home/runner/rush/sdk)
+          # 3. Tạo thư mục dữ liệu thủ công
+          mkdir -p /home/runner/rush/sdk
           unzip -q rush-sdk.zip -d /home/runner/rush/sdk
           
-          # 4. Tìm file chạy và cấp quyền
+          # 4. Tìm file chạy
           RUSH_BIN=$(find rush_temp -name rush -type f | head -n 1)
           chmod +x $RUSH_BIN
-          
-          echo "✅ Môi trường đã cài xong. Rush SDK nằm tại /home/runner/rush/sdk"
           
           # 5. Build
           $RUSH_BIN build
