@@ -4,29 +4,41 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4      # Đã cập nhật lên v4
+      - uses: actions/checkout@v4
+      
       - name: Setup Java
-        uses: actions/setup-java@v4    # Đã cập nhật lên v4
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '11'
       
-      - name: Install Rush & Build
+      - name: Install Rush & SDK Manually
         run: |
-          # Tải Rush
+          # 1. Tải Rush Binary (File chạy)
           wget -q https://github.com/ShreyashSaitwal/rush-cli/releases/download/v1.2.5/rush-linux.zip
-          unzip -q rush-linux.zip -d rush_tool
+          unzip -q rush-linux.zip -d rush_temp
           
-          # Tìm file chạy (Fix lỗi đường dẫn)
-          RUSH_BIN=$(find rush_tool -name rush -type f | head -n 1)
+          # 2. Tải Rush SDK (BẮT BUỘC - Đây là cái Rush đang thiếu)
+          wget -q https://github.com/ShreyashSaitwal/rush-cli/releases/download/v1.2.5/rush-sdk.zip
+          
+          # 3. Thiết lập cấu trúc thư mục chuẩn mà Rush yêu cầu (Fix lỗi "doesn't exists")
+          # Tạo thư mục gốc /home/runner/rush
+          mkdir -p /home/runner/rush
+          
+          # Giải nén SDK vào đúng chỗ Rush muốn (/home/runner/rush/sdk)
+          unzip -q rush-sdk.zip -d /home/runner/rush/sdk
+          
+          # 4. Tìm file chạy và cấp quyền
+          RUSH_BIN=$(find rush_temp -name rush -type f | head -n 1)
           chmod +x $RUSH_BIN
-          echo "Rush found at: $RUSH_BIN"
           
-          # Build
+          echo "✅ Môi trường đã cài xong. Rush SDK nằm tại /home/runner/rush/sdk"
+          
+          # 5. Build
           $RUSH_BIN build
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v4  # <--- QUAN TRỌNG NHẤT: SỬA THÀNH V4
+        uses: actions/upload-artifact@v4
         with:
           name: Android15Fix-Extension
           path: out/*.aix
