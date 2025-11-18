@@ -1,0 +1,7 @@
+name: Android15Fix
+description: Extension fix status bar Android 15
+version:
+  name: "1.0.0"
+  code: 1
+assets: []
+deps: []
