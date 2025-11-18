@@ -4,23 +4,29 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4      # Đã cập nhật lên v4
       - name: Setup Java
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4    # Đã cập nhật lên v4
         with:
           distribution: 'temurin'
           java-version: '11'
+      
       - name: Install Rush & Build
         run: |
-          wget https://github.com/ShreyashSaitwal/rush-cli/releases/download/v1.2.5/rush-linux.zip
-          unzip rush-linux.zip -d rush_tool
-          # Tìm file rush bất kể nó nằm đâu
+          # Tải Rush
+          wget -q https://github.com/ShreyashSaitwal/rush-cli/releases/download/v1.2.5/rush-linux.zip
+          unzip -q rush-linux.zip -d rush_tool
+          
+          # Tìm file chạy (Fix lỗi đường dẫn)
           RUSH_BIN=$(find rush_tool -name rush -type f | head -n 1)
           chmod +x $RUSH_BIN
+          echo "Rush found at: $RUSH_BIN"
+          
           # Build
           $RUSH_BIN build
+
       - name: Upload Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4  # <--- QUAN TRỌNG NHẤT: SỬA THÀNH V4
         with:
           name: Android15Fix-Extension
           path: out/*.aix
